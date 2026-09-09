@@ -162,11 +162,7 @@ export default function Index() {
                         className="flex-1 rounded-md border border-gray-300 px-3 py-2"
                       />
                       <Button
-                        onClick={() =>
-                          alert(
-                            "Satellite analysis completed!\n\nRoof Area: 1,200 sq.ft\nRainwater Harvesting Potential: 85,000 L/year\nRecommended Structure: Recharge Pit"
-                          )
-                        }
+                        onClick={() => navigate("/roof-detection")}
                       >
                         Analyze
                       </Button>
