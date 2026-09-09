@@ -142,11 +142,7 @@ export default function Index() {
                     </p>
                     <Button
                       className="mt-4"
-                      onClick={() =>
-                        alert(
-                          "Camera module opened!\n\nPlease capture or upload a roof image for analysis."
-                        )
-                      }
+                      onClick={() => window.location.href = "/roof-detection"}
                     >
                       Open Camera
                     </Button>
