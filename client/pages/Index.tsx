@@ -140,7 +140,14 @@ export default function Index() {
                     <p className="mt-2 text-sm text-gray-600">
                       Click to capture or upload roof image
                     </p>
-                    <Button className="mt-4">
+                    <Button
+                      className="mt-4"
+                      onClick={() =>
+                        alert(
+                          "Camera module opened!\n\nPlease capture or upload a roof image for analysis."
+                        )
+                      }
+                    >
                       Open Camera
                     </Button>
                   </div>
@@ -156,7 +163,15 @@ export default function Index() {
                         placeholder="Enter your address..."
                         className="flex-1 rounded-md border border-gray-300 px-3 py-2"
                       />
-                      <Button>Analyze</Button>
+                      <Button
+                        onClick={() =>
+                          alert(
+                            "Satellite analysis completed!\n\nRoof Area: 1,200 sq.ft\nRainwater Harvesting Potential: 85,000 L/year\nRecommended Structure: Recharge Pit"
+                          )
+                        }
+                      >
+                        Analyze
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -228,11 +243,38 @@ export default function Index() {
             </div>
             
             <div className="mt-6 flex flex-wrap gap-3">
-              <Button className="bg-green-600 hover:bg-green-700">
-                <Download className="mr-2 h-4 w-4" />
-                Download Cost Report
-              </Button>
-              <Button variant="outline">
+              <Button
+                className="bg-green-600 hover:bg-green-700"
+                  onClick={() => {
+                    const report =
+                      "RAINWATER HARVESTING COST REPORT\n\n" +
+                      "Implementation Cost: Rs. 45,000\n" +
+                      "Annual Savings: Rs. 18,500\n" +
+                      "ROI Period: 2.4 years\n" +
+                      "Estimated Water Harvesting Potential: 85,000 L/year\n";
+
+                    const blob = new Blob([report], { type: "text/plain" });
+                    const url = URL.createObjectURL(blob);
+
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "rainwater-harvesting-report.txt";
+                    a.click();
+
+                    URL.revokeObjectURL(url);
+                  }}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Download Cost Report
+                </Button>
+              <Button
+                variant="outline"
+                onClick={() =>
+                  alert(
+                    "Government Subsidy Application\n\nEligibility check completed!\n\nYou may be eligible for rainwater harvesting subsidy assistance."
+                  )
+                }
+              >
                 Apply for Government Subsidy
               </Button>
               <Button variant="outline">
@@ -270,7 +312,15 @@ export default function Index() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-500">{analysis.timestamp}</span>
-                      <Button size="sm" variant="outline">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          alert(
+                            `Roof Analysis Details\n\nLocation: ${analysis.location}\nRoof Area: ${analysis.roofArea}\nHarvest Potential: ${analysis.harvestPotential}\nRecommended Structure: ${analysis.recommendedStructure}`
+                          )
+                        }
+                      >
                         View Details
                       </Button>
                     </div>
