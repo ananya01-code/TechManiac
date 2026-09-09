@@ -6,32 +6,45 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
 export default function RoofDetection() {
-  const [detectionStep, setDetectionStep] = useState<'select' | 'capture' | 'processing' | 'results'>('select');
-  const [detectionMethod, setDetectionMethod] = useState<'camera' | 'satellite' | 'upload'>('camera');
+  const [detectionStep, setDetectionStep] = useState<
+    "select" | "capture" | "processing" | "results"
+  >("select");
+
+  const [detectionMethod, setDetectionMethod] = useState<
+    "camera" | "satellite" | "upload"
+  >("camera");
+
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const mockResults = {
-    roofArea: "245.8 m²",
-    harvestPotential: "18,435 L/year",
-    recommendedStructure: "Percolation Pit",
-    estimatedCost: "₹42,500",
-    roi: "2.3 years",
-    confidence: 94
-  };
+  // POC calculation values
+  const roofArea = 245.8;
+  const annualRainfall = 850;
+  const runoffCoefficient = 0.8;
+  const harvestEfficiency = 0.78;
+
+  const harvestPotential = Math.round(
+    roofArea * annualRainfall * runoffCoefficient * harvestEfficiency
+  );
+
+  const estimatedCost = Math.round(roofArea * 175);
+
+  const annualSavings = Math.round(harvestPotential * 0.14);
+
+  const roi = (estimatedCost / annualSavings).toFixed(1);
 
   const handleStartAnalysis = () => {
-    setDetectionStep('processing');
+    setDetectionStep("processing");
     setAnalysisProgress(0);
-    
-    // Simulate analysis progress
+
     const interval = setInterval(() => {
-      setAnalysisProgress(prev => {
+      setAnalysisProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
-          setDetectionStep('results');
+          setDetectionStep("results");
           return 100;
         }
+
         return prev + 10;
       });
     }, 500);
@@ -46,53 +59,86 @@ export default function RoofDetection() {
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900">AI Roof Detection</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            AI Roof Detection
+          </h1>
+
           <p className="mt-2 text-gray-600 hide-description-mobile">
-            Analyze your roof using advanced AI and get personalized rainwater harvesting recommendations
+            Analyze your roof using advanced AI and get personalized rainwater
+            harvesting recommendations
           </p>
         </div>
 
         {/* Progress Steps */}
         <div className="mb-8 flex items-center justify-center">
-          {/* Desktop view - unchanged */}
+          {/* Desktop */}
           <div className="hidden md:flex items-center space-x-4">
-            {['Select Method', 'Capture/Upload', 'AI Analysis', 'Results'].map((step, index) => (
-              <div key={step} className="flex items-center">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
-                  index <= ['select', 'capture', 'processing', 'results'].indexOf(detectionStep)
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-600'
-                }`}>
-                  {index + 1}
-                </div>
-                <span className="ml-2 text-sm font-medium text-gray-600">{step}</span>
-                {index < 3 && <div className="ml-4 h-0.5 w-8 bg-gray-200"></div>}
-              </div>
-            ))}
-          </div>
-          
-          {/* Mobile view - improved for better visibility */}
-          <div className="md:hidden w-full max-w-xs">
-            <div className="flex justify-between">
-              {['Select Method', 'Capture/Upload', 'AI Analysis', 'Results'].map((step, index) => (
-                <div key={step} className="flex flex-col items-center">
-                  <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
-                    index <= ['select', 'capture', 'processing', 'results'].indexOf(detectionStep)
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-600'
-                  }`}>
+            {["Select Method", "Capture/Upload", "AI Analysis", "Results"].map(
+              (step, index) => (
+                <div key={step} className="flex items-center">
+                  <div
+                    className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
+                      index <=
+                      ["select", "capture", "processing", "results"].indexOf(
+                        detectionStep,
+                      )
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-600"
+                    }`}
+                  >
                     {index + 1}
                   </div>
-                  <span className="mt-1 text-xs font-medium text-gray-600 text-center">{step}</span>
+
+                  <span className="ml-2 text-sm font-medium text-gray-600">
+                    {step}
+                  </span>
+
+                  {index < 3 && (
+                    <div className="ml-4 h-0.5 w-8 bg-gray-200"></div>
+                  )}
                 </div>
-              ))}
+              ),
+            )}
+          </div>
+
+          {/* Mobile */}
+          <div className="md:hidden w-full max-w-xs">
+            <div className="flex justify-between">
+              {["Select Method", "Capture/Upload", "AI Analysis", "Results"].map(
+                (step, index) => (
+                  <div key={step} className="flex flex-col items-center">
+                    <div
+                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
+                        index <=
+                        ["select", "capture", "processing", "results"].indexOf(
+                          detectionStep,
+                        )
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-200 text-gray-600"
+                      }`}
+                    >
+                      {index + 1}
+                    </div>
+
+                    <span className="mt-1 text-xs font-medium text-gray-600 text-center">
+                      {step}
+                    </span>
+                  </div>
+                ),
+              )}
             </div>
-            {/* Progress bar for mobile */}
+
             <div className="mt-2 h-1 w-full bg-gray-200 rounded-full">
-              <div 
+              <div
                 className="h-1 bg-blue-600 rounded-full transition-all duration-300"
-                style={{ 
-                  width: `${(['select', 'capture', 'processing', 'results'].indexOf(detectionStep) / 3) * 100}%` 
+                style={{
+                  width: `${
+                    (["select", "capture", "processing", "results"].indexOf(
+                      detectionStep,
+                    ) /
+                      3) *
+                    100
+                  }%`,
                 }}
               ></div>
             </div>
@@ -100,53 +146,60 @@ export default function RoofDetection() {
         </div>
 
         {/* Step 1: Method Selection */}
-        {detectionStep === 'select' && (
+        {detectionStep === "select" && (
           <Card className="border-0 shadow-lg">
             <CardHeader>
               <CardTitle>Choose Detection Method</CardTitle>
             </CardHeader>
+
             <CardContent>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <button
-                  onClick={() => setDetectionMethod('camera')}
+                  onClick={() => setDetectionMethod("camera")}
                   className={`rounded-lg border-2 p-6 text-center transition-all ${
-                    detectionMethod === 'camera'
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                    detectionMethod === "camera"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
                   <Camera className="mx-auto h-12 w-12 text-blue-600" />
+
                   <h3 className="mt-3 font-semibold">Live Camera</h3>
+
                   <p className="mt-1 text-sm text-gray-600">
                     Capture roof image using your device camera
                   </p>
                 </button>
 
                 <button
-                  onClick={() => setDetectionMethod('satellite')}
+                  onClick={() => setDetectionMethod("satellite")}
                   className={`rounded-lg border-2 p-6 text-center transition-all ${
-                    detectionMethod === 'satellite'
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                    detectionMethod === "satellite"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
                   <MapPin className="mx-auto h-12 w-12 text-green-600" />
+
                   <h3 className="mt-3 font-semibold">Satellite Imagery</h3>
+
                   <p className="mt-1 text-sm text-gray-600">
                     Analyze using Google Earth Engine API
                   </p>
                 </button>
 
                 <button
-                  onClick={() => setDetectionMethod('upload')}
+                  onClick={() => setDetectionMethod("upload")}
                   className={`rounded-lg border-2 p-6 text-center transition-all ${
-                    detectionMethod === 'upload'
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                    detectionMethod === "upload"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
                   <Upload className="mx-auto h-12 w-12 text-purple-600" />
+
                   <h3 className="mt-3 font-semibold">Upload Image</h3>
+
                   <p className="mt-1 text-sm text-gray-600">
                     Upload existing roof image from gallery
                   </p>
@@ -154,27 +207,36 @@ export default function RoofDetection() {
               </div>
 
               <div className="mt-6 text-center">
-                <Button 
-                  onClick={() => setDetectionStep('capture')}
+                <Button
+                  onClick={() => setDetectionStep("capture")}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
-                  Continue with {detectionMethod === 'camera' ? 'Camera' : detectionMethod === 'satellite' ? 'Satellite' : 'Upload'}
+                  Continue with{" "}
+                  {detectionMethod === "camera"
+                    ? "Camera"
+                    : detectionMethod === "satellite"
+                      ? "Satellite"
+                      : "Upload"}
                 </Button>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Harvesting Plan Preview Diagram - Below roof detection method section */}
-        {detectionStep === 'select' && (
+        {/* Harvesting Plan Preview */}
+        {detectionStep === "select" && (
           <div className="mt-8 mb-8 w-full mx-auto">
             <div className="rounded-lg border border-gray-200 shadow-sm p-4 bg-white">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center">Harvesting Plan Preview</h3>
-              <img 
-                src="/preview.jpg" 
-                alt="Harvesting Plan Diagram" 
+              <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center">
+                Harvesting Plan Preview
+              </h3>
+
+              <img
+                src="/preview.jpg"
+                alt="Harvesting Plan Diagram"
                 className="w-full h-auto rounded-lg"
               />
+
               <p className="text-sm text-gray-500 mt-2 text-center">
                 Example visualization of a rainwater harvesting system
               </p>
@@ -183,70 +245,104 @@ export default function RoofDetection() {
         )}
 
         {/* Step 2: Capture/Upload */}
-        {detectionStep === 'capture' && (
+        {detectionStep === "capture" && (
           <Card className="border-0 shadow-lg">
             <CardHeader>
               <CardTitle>
-                {detectionMethod === 'camera' && 'Camera Capture'}
-                {detectionMethod === 'satellite' && 'Satellite Analysis'}
-                {detectionMethod === 'upload' && 'Upload Image'}
+                {detectionMethod === "camera" && "Camera Capture"}
+                {detectionMethod === "satellite" && "Satellite Analysis"}
+                {detectionMethod === "upload" && "Upload Image"}
               </CardTitle>
             </CardHeader>
+
             <CardContent>
-              {detectionMethod === 'camera' && (
+              {/* Camera */}
+              {detectionMethod === "camera" && (
                 <div className="text-center">
                   <div className="mx-auto h-64 w-full max-w-md rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center">
                     <div>
                       <Camera className="mx-auto h-16 w-16 text-gray-400" />
-                      <p className="mt-2 text-gray-600">Camera preview will appear here</p>
+
+                      <p className="mt-2 text-gray-600">
+                        Camera preview will appear here
+                      </p>
                     </div>
                   </div>
+
                   <div className="mt-6 space-x-4">
-                    <Button onClick={handleStartAnalysis} className="bg-blue-600 hover:bg-blue-700">
+                    <Button
+                      onClick={handleStartAnalysis}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
                       <Camera className="mr-2 h-4 w-4" />
                       Capture Roof
                     </Button>
-                    <Button variant="outline" onClick={() => setDetectionStep('select')}>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => setDetectionStep("select")}
+                    >
                       Back
                     </Button>
                   </div>
                 </div>
               )}
 
-              {detectionMethod === 'satellite' && (
+              {/* Satellite */}
+              {detectionMethod === "satellite" && (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Enter Address</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Enter Address
+                    </label>
+
                     <input
                       type="text"
                       placeholder="Enter your complete address..."
                       className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
                     />
                   </div>
+
                   <div className="text-center">
-                    <Button onClick={handleStartAnalysis} className="bg-green-600 hover:bg-green-700">
+                    <Button
+                      onClick={handleStartAnalysis}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
                       <MapPin className="mr-2 h-4 w-4" />
                       Analyze from Satellite
                     </Button>
-                    <Button variant="outline" className="ml-4" onClick={() => setDetectionStep('select')}>
+
+                    <Button
+                      variant="outline"
+                      className="ml-4"
+                      onClick={() => setDetectionStep("select")}
+                    >
                       Back
                     </Button>
                   </div>
                 </div>
               )}
 
-              {detectionMethod === 'upload' && (
+              {/* Upload */}
+              {detectionMethod === "upload" && (
                 <div className="text-center">
-                  <div 
+                  <div
                     onClick={handleFileUpload}
                     className="mx-auto h-64 w-full max-w-md rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center cursor-pointer hover:border-gray-400"
                   >
                     <div>
                       <Upload className="mx-auto h-16 w-16 text-gray-400" />
-                      <p className="mt-2 text-gray-600">Click to upload roof image</p>
-                      <p className="text-sm text-gray-500">PNG, JPG up to 10MB</p>
+
+                      <p className="mt-2 text-gray-600">
+                        Click to upload roof image
+                      </p>
+
+                      <p className="text-sm text-gray-500">
+                        PNG, JPG up to 10MB
+                      </p>
                     </div>
                   </div>
+
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -254,8 +350,12 @@ export default function RoofDetection() {
                     className="hidden"
                     onChange={handleStartAnalysis}
                   />
+
                   <div className="mt-6">
-                    <Button variant="outline" onClick={() => setDetectionStep('select')}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setDetectionStep("select")}
+                    >
                       Back
                     </Button>
                   </div>
@@ -266,7 +366,7 @@ export default function RoofDetection() {
         )}
 
         {/* Step 3: Processing */}
-        {detectionStep === 'processing' && (
+        {detectionStep === "processing" && (
           <Card className="border-0 shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center">
@@ -274,17 +374,29 @@ export default function RoofDetection() {
                 AI Analysis in Progress
               </CardTitle>
             </CardHeader>
+
             <CardContent>
               <div className="text-center">
                 <div className="mx-auto h-32 w-32 rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin"></div>
-                <h3 className="mt-6 text-lg font-semibold">Analyzing Your Roof</h3>
+
+                <h3 className="mt-6 text-lg font-semibold">
+                  Analyzing Your Roof
+                </h3>
+
                 <p className="mt-2 text-gray-600">
-                  Our AI is processing the image and analyzing roof dimensions...
+                  Our AI is processing the image and analyzing roof
+                  dimensions...
                 </p>
-                
+
                 <div className="mt-6">
-                  <Progress value={analysisProgress} className="w-full max-w-md mx-auto" />
-                  <p className="mt-2 text-sm text-gray-500">{analysisProgress}% Complete</p>
+                  <Progress
+                    value={analysisProgress}
+                    className="w-full max-w-md mx-auto"
+                  />
+
+                  <p className="mt-2 text-sm text-gray-500">
+                    {analysisProgress}% Complete
+                  </p>
                 </div>
 
                 <div className="mt-6 space-y-2 text-left max-w-md mx-auto">
@@ -292,14 +404,17 @@ export default function RoofDetection() {
                     <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
                     Roof detection completed
                   </div>
+
                   <div className="flex items-center text-sm">
                     <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
                     Area calculation in progress
                   </div>
+
                   <div className="flex items-center text-sm text-gray-400">
                     <div className="mr-2 h-4 w-4 rounded-full border-2 border-gray-300"></div>
                     GIS data integration
                   </div>
+
                   <div className="flex items-center text-sm text-gray-400">
                     <div className="mr-2 h-4 w-4 rounded-full border-2 border-gray-300"></div>
                     Generating recommendations
@@ -311,7 +426,7 @@ export default function RoofDetection() {
         )}
 
         {/* Step 4: Results */}
-        {detectionStep === 'results' && (
+        {detectionStep === "results" && (
           <div className="space-y-6">
             <Card className="border-0 shadow-lg">
               <CardHeader>
@@ -320,44 +435,97 @@ export default function RoofDetection() {
                   Analysis Complete
                 </CardTitle>
               </CardHeader>
+
               <CardContent>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {/* Roof Area */}
                   <div className="rounded-lg bg-blue-50 p-4">
-                    <h3 className="font-semibold text-blue-800">Roof Area</h3>
-                    <p className="text-2xl font-bold text-blue-900">{mockResults.roofArea}</p>
+                    <h3 className="font-semibold text-blue-800">
+                      Roof Area
+                    </h3>
+
+                    <p className="text-2xl font-bold text-blue-900">
+                      {roofArea} m²
+                    </p>
+
                     <Badge className="mt-1 bg-blue-100 text-blue-800">
-                      {mockResults.confidence}% Confidence
+                      94% POC Confidence
                     </Badge>
                   </div>
-                  
+
+                  {/* Harvest Potential */}
                   <div className="rounded-lg bg-cyan-50 p-4">
-                    <h3 className="font-semibold text-cyan-800">Harvest Potential</h3>
-                    <p className="text-2xl font-bold text-cyan-900">{mockResults.harvestPotential}</p>
-                    <p className="text-sm text-cyan-700">Based on local rainfall</p>
+                    <h3 className="font-semibold text-cyan-800">
+                      Harvest Potential
+                    </h3>
+
+                    <p className="text-2xl font-bold text-cyan-900">
+                      {harvestPotential.toLocaleString()} L/year
+                    </p>
+
+                    <p className="text-sm text-cyan-700">
+                      Based on regional rainfall
+                    </p>
                   </div>
-                  
+
+                  {/* Recommendation */}
                   <div className="rounded-lg bg-green-50 p-4">
-                    <h3 className="font-semibold text-green-800">Recommended Structure</h3>
-                    <p className="text-lg font-bold text-green-900">{mockResults.recommendedStructure}</p>
-                    <p className="text-sm text-green-700">Optimal for your soil type</p>
+                    <h3 className="font-semibold text-green-800">
+                      Recommended Structure
+                    </h3>
+
+                    <p className="text-lg font-bold text-green-900">
+                      Percolation Pit
+                    </p>
+
+                    <p className="text-sm text-green-700">
+                      Suitable for moderate soil permeability
+                    </p>
                   </div>
-                  
+
+                  {/* Cost */}
                   <div className="rounded-lg bg-purple-50 p-4">
-                    <h3 className="font-semibold text-purple-800">Implementation Cost</h3>
-                    <p className="text-2xl font-bold text-purple-900">{mockResults.estimatedCost}</p>
-                    <p className="text-sm text-purple-700">Including materials & labor</p>
+                    <h3 className="font-semibold text-purple-800">
+                      Implementation Cost
+                    </h3>
+
+                    <p className="text-2xl font-bold text-purple-900">
+                      ₹{estimatedCost.toLocaleString()}
+                    </p>
+
+                    <p className="text-sm text-purple-700">
+                      Estimated materials & labor
+                    </p>
                   </div>
-                  
+
+                  {/* ROI */}
                   <div className="rounded-lg bg-orange-50 p-4">
-                    <h3 className="font-semibold text-orange-800">ROI Period</h3>
-                    <p className="text-2xl font-bold text-orange-900">{mockResults.roi}</p>
-                    <p className="text-sm text-orange-700">Break-even timeline</p>
+                    <h3 className="font-semibold text-orange-800">
+                      ROI Period
+                    </h3>
+
+                    <p className="text-2xl font-bold text-orange-900">
+                      {roi} years
+                    </p>
+
+                    <p className="text-sm text-orange-700">
+                      Estimated break-even timeline
+                    </p>
                   </div>
-                  
+
+                  {/* Annual Savings */}
                   <div className="rounded-lg bg-indigo-50 p-4">
-                    <h3 className="font-semibold text-indigo-800">Annual Savings</h3>
-                    <p className="text-2xl font-bold text-indigo-900">₹18,500</p>
-                    <p className="text-sm text-indigo-700">Water bill reduction</p>
+                    <h3 className="font-semibold text-indigo-800">
+                      Annual Savings
+                    </h3>
+
+                    <p className="text-2xl font-bold text-indigo-900">
+                      ₹{annualSavings.toLocaleString()}
+                    </p>
+
+                    <p className="text-sm text-indigo-700">
+                      Estimated water bill reduction
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -371,19 +539,23 @@ export default function RoofDetection() {
                     <Download className="mr-2 h-4 w-4" />
                     Download Report
                   </Button>
+
                   <Button variant="outline">
                     Apply for Subsidy
                   </Button>
+
                   <Button variant="outline">
                     Find Contractors
                   </Button>
+
                   <Button variant="outline">
                     Share Results
                   </Button>
-                  <Button 
-                    variant="outline" 
+
+                  <Button
+                    variant="outline"
                     onClick={() => {
-                      setDetectionStep('select');
+                      setDetectionStep("select");
                       setAnalysisProgress(0);
                     }}
                   >
@@ -393,25 +565,30 @@ export default function RoofDetection() {
               </CardContent>
             </Card>
 
-            {/* Harvesting Plan Preview Diagram */}
+            {/* Harvesting Plan Preview */}
             <Card className="border-0 shadow-lg mt-6">
               <CardHeader>
                 <CardTitle>Harvesting Plan Preview</CardTitle>
               </CardHeader>
+
               <CardContent>
                 <div className="flex flex-col items-center">
                   <p className="text-gray-600 mb-4 text-center">
-                    Visual representation of the recommended rainwater harvesting system for your roof
+                    Visual representation of the recommended rainwater
+                    harvesting system for your roof
                   </p>
+
                   <div className="w-full mx-auto">
-                    <img 
-                      src="/preview.jpg" 
-                      alt="Harvesting Plan Diagram" 
+                    <img
+                      src="/preview.jpg"
+                      alt="Harvesting Plan Diagram"
                       className="w-full h-auto rounded-lg border border-gray-200 shadow-sm"
                     />
                   </div>
+
                   <p className="text-sm text-gray-500 mt-3 text-center">
-                    Diagram shows the optimal placement and configuration of the harvesting system based on your roof analysis
+                    Diagram shows the optimal placement and configuration of
+                    the harvesting system based on your roof analysis
                   </p>
                 </div>
               </CardContent>
