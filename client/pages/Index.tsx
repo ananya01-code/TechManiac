@@ -1,10 +1,12 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Camera, Satellite, MapPin, Droplets, Calculator, TrendingUp, Download, Users, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 export default function Index() {
+  const navigate = useNavigate();
   const [detectionMethod, setDetectionMethod] = useState<'camera' | 'satellite'>('camera');
   
   const kpis = [
@@ -142,7 +144,7 @@ export default function Index() {
                     </p>
                     <Button
                       className="mt-4"
-                      onClick={() => window.location.href = "/roof-detection"}
+                      onClick={() => navigate("/roof-detection")}
                     >
                       Open Camera
                     </Button>
